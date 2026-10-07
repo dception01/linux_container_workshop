@@ -2,11 +2,9 @@
 
 **A hands-on project for learning Linux and containers.**
 
-I created this project for my Linux and containers workshop. The idea is simple: build a small feedback app, run it in a container, connect it to a database, and then see what happens when we run two copies of the app.
+This project introduces Linux and container deployment through a Campus Feedback application. The exercises progress from running a single container to connecting a database and distributing requests between two application instances.
 
-We’ll use an Ubuntu 26.04 LTS amd64 VM on VMware Workstation. You can follow the labs one at a time and use the same project throughout the workshop.
-
-— Abhishek Gupta
+The lab environment is an Ubuntu 26.04 LTS amd64 virtual machine running on VMware Workstation. Each exercise builds on the previous one, using the same application throughout.
 
 ## Start here
 
@@ -55,7 +53,7 @@ Expect both `app-1` and `app-2` across multiple requests, not a guarantee of per
 
 ## Prepared-image path
 
-I’ve included a publishing workflow so we can also run the app from a ready-made image when time is short. The image needs to be published before these commands will work. See the [publishing steps](labs/04-publish-offline.md).
+A publishing workflow provides a ready-made application image for use when a local build is not practical. The image must be published before running the following commands. See the [publishing steps](labs/04-publish-offline.md).
 
 ```bash
 cp .env.example .env  # first setup only; do not overwrite your later edits
@@ -63,11 +61,11 @@ docker compose -f compose.yaml -f compose.lb.yaml pull
 docker compose -f compose.yaml -f compose.lb.yaml up -d --wait
 ```
 
-## What we’ll build
+## About the application
 
 The Campus Feedback app lets you enter your team name, a rating from 1 to 5 and a short comment. Flask validates the submission, stores it in PostgreSQL, and renders the latest feedback, response count and average rating. Each page also identifies which application instance served it.
 
-I chose Flask to keep the application small and easy to follow. It serves the HTML page and handles form submissions, so we can spend more time on Linux, containers and networking. Gunicorn runs the Flask application inside the container. PostgreSQL is a separate container; HTML templates are part of the application image.
+Flask keeps the application small and easy to follow. It serves the HTML page and handles form submissions, allowing the exercises to focus on Linux, containers and networking. Gunicorn runs the Flask application inside the container. PostgreSQL is a separate container; HTML templates are part of the application image.
 
 ## Architecture: where everything runs
 
@@ -92,7 +90,7 @@ flowchart TD
     B -->|VM port 8080 · direct access| A
 ```
 
-Start with **app1 and PostgreSQL**. Later add **app2 and NGINX**. Both app containers run the same image and share the database. Database port 5432 is internal and is not published on the VM. We’ll use this setup to understand how separate containers communicate and share data.
+Start with **app1 and PostgreSQL**. Later add **app2 and NGINX**. Both app containers run the same image and share the database. Database port 5432 is internal and is not published on the VM. This setup demonstrates how separate containers communicate and share data.
 
 ## What happens when you submit feedback?
 
@@ -141,9 +139,9 @@ docker compose -f compose.yaml -f compose.lb.yaml down
 
 The named volume remains. `down -v` deletes the workshop database permanently; only use it for an intentional fresh reset.
 
-## A few things to keep in mind
+## Scope and limitations
 
-We’ll add the second app instance manually; this project does not include autoscaling. Everything still runs on one VM, with one database and one proxy, so the setup is for learning rather than production use. Use sample feedback: the app has no login and uses HTTP and demo database credentials.
+The second application instance is added manually; the project does not include autoscaling. Everything still runs on one VM, with one database and one proxy, so the setup is for learning rather than production use. Use sample feedback: the app has no login and uses HTTP and demo database credentials.
 
 The configuration specifies dependency and image versions to keep the lab consistent. Review updates before reusing it for another workshop, and pin tested image digests if you need an exact copy of a particular build.
 
