@@ -55,6 +55,6 @@ Edit `TEAM_NAME` in `.env`; keep values containing spaces quoted. Leave the data
 
 Start with NAT and confirm the guest has internet. Use the VM browser for the simplest access, or the guest's reachable IP from the host laptop. `hostname -I` can include Docker bridge addresses; identify the VMware guest interface with `ip -br address`.
 
-Other students' laptops do not automatically have access to a NAT guest. For the pilot, each student can use their own VM, or share the instructor's browser. Only configure bridged networking if the campus network permits it and you need cross-laptop access.
+Other students' laptops do not automatically have access to a NAT guest. For our trial session, you can use your own VM or follow along on the shared screen. Only configure bridged networking if the campus network permits it and you need cross-laptop access.
 
 Source: https://docs.docker.com/engine/install/ubuntu/

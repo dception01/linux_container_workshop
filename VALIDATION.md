@@ -1,13 +1,13 @@
-# Preparation validation
+# Testing notes
 
-Checked in the authoring workspace:
+Checks completed so far:
 
 - 12 application tests passed: missing-database preview, health/readiness distinction, input bounds, parameterized insert, storage-failure response, HTML escaping and request-size limit.
 - Python source compiled successfully.
 - Docker Compose v2.39.4 validated the base, build and load-balancing configurations with `config --quiet`; workflow YAML also parsed successfully.
 - Shell scripts passed Bash syntax checking.
 
-Database interactions in the application tests are mocked. These tests do not prove live PostgreSQL persistence, container image builds, NGINX failover or VMware access. Docker Engine was not available in the authoring workspace. Complete the rehearsal in INSTRUCTOR.md on the Ubuntu VM before teaching.
+The tests use mocked database connections. Live PostgreSQL persistence, image builds, NGINX failover and browser access through VMware still need to be checked on the Ubuntu VM. Follow the [rehearsal checklist](INSTRUCTOR.md) to complete those checks.
 
 Run application tests:
 

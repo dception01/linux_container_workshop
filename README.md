@@ -1,12 +1,16 @@
 # Linux Container Workshop 2026
 
-**Campus Feedback App — build, connect and scale a multi-container application.**
+**A hands-on project for learning Linux and containers.**
 
-Prepared for Abhishek Gupta's Linux and containers workshop. Target: an Ubuntu 26.04 LTS amd64 VM on VMware Workstation. This is a teaching lab, not a production deployment.
+I created this project for my Linux and containers workshop. The idea is simple: build a small feedback app, run it in a container, connect it to a database, and then see what happens when we run two copies of the app.
+
+We’ll use an Ubuntu 26.04 LTS amd64 VM on VMware Workstation. You can follow the labs one at a time and use the same project throughout the workshop.
+
+— Abhishek Gupta
 
 ## Start here
 
-All source, YAML and configuration files are browsable in this repository. For a ZIP copy, use **Code → Download ZIP** on GitHub. Extract it and open a terminal in the extracted project directory; no separate ZIP needs to be committed to Git.
+The code, configuration files and lab instructions are all here. Clone the repository or choose **Code → Download ZIP**, then open a terminal in the project folder.
 
 1. [Prepare the Ubuntu VM](labs/00-setup.md).
 2. [Learn Linux and run your first container](labs/01-linux-containers.md).
@@ -51,7 +55,7 @@ Expect both `app-1` and `app-2` across multiple requests, not a guarantee of per
 
 ## Prepared-image path
 
-This path requires the instructor to publish the image first; committing this repository does not publish the image automatically. See [publishing](labs/04-publish-offline.md).
+I’ve included a publishing workflow so we can also run the app from a ready-made image when time is short. The image needs to be published before these commands will work. See the [publishing steps](labs/04-publish-offline.md).
 
 ```bash
 cp .env.example .env  # first setup only; do not overwrite your later edits
@@ -59,11 +63,11 @@ docker compose -f compose.yaml -f compose.lb.yaml pull
 docker compose -f compose.yaml -f compose.lb.yaml up -d --wait
 ```
 
-## What students build
+## What we’ll build
 
-A browser-based Campus Feedback app. A student enters a team name, a rating from 1 to 5 and a short comment. Flask validates the submission, stores it in PostgreSQL, and renders the latest feedback, response count and average rating. Each page also identifies which application instance served it.
+The Campus Feedback app lets you enter your team name, a rating from 1 to 5 and a short comment. Flask validates the submission, stores it in PostgreSQL, and renders the latest feedback, response count and average rating. Each page also identifies which application instance served it.
 
-**Why Flask?** The project uses one small Python application and server-rendered HTML, so students can follow the request flow without first learning a separate JavaScript framework. Gunicorn runs the Flask application inside the container. PostgreSQL is a separate container; HTML templates are part of the application image.
+I chose Flask to keep the application small and easy to follow. It serves the HTML page and handles form submissions, so we can spend more time on Linux, containers and networking. Gunicorn runs the Flask application inside the container. PostgreSQL is a separate container; HTML templates are part of the application image.
 
 ## Architecture: where everything runs
 
@@ -88,7 +92,7 @@ flowchart TD
     B -->|VM port 8080 · direct access| A
 ```
 
-Start with **app1 and PostgreSQL**. Later add **app2 and NGINX**. Both app containers run the same image and share the database. Database port 5432 is internal and is not published on the VM. This is a multi-container application; adding containers alone does not make a complete microservices architecture.
+Start with **app1 and PostgreSQL**. Later add **app2 and NGINX**. Both app containers run the same image and share the database. Database port 5432 is internal and is not published on the VM. We’ll use this setup to understand how separate containers communicate and share data.
 
 ## What happens when you submit feedback?
 
@@ -99,9 +103,9 @@ Start with **app1 and PostgreSQL**. Later add **app2 and NGINX**. Both app conta
 5. Flask returns a redirect; the browser loads the page again and sees updated feedback.
 6. That page request may reach the other replica, which sees the same shared database.
 
-## Step-by-step workshop checkpoints
+## Workshop steps
 
-| Stage | Configuration or files | Observable result |
+| Step | Files and instructions | What you should see |
 | --- | --- | --- |
 | 1. Prepare Linux | [VM setup](labs/00-setup.md) | Docker and Compose work inside Ubuntu |
 | 2. Explore containers | [First container](labs/01-linux-containers.md) | NGINX welcome page on port 8090 |
@@ -112,7 +116,7 @@ Start with **app1 and PostgreSQL**. Later add **app2 and NGINX**. Both app conta
 | 7. Test failure and persistence | [Scaling/persistence lab](labs/03-scale-persist.md) | Remaining replica serves requests; records survive container replacement |
 | 8. Distribute the project | [Publishing/offline lab](labs/04-publish-offline.md) | Prepared images can be pulled or loaded offline |
 
-The base YAML is always supplied first. The build YAML adds local build settings; the load-balancing YAML adds services. For the first rehearsal, follow the numbered labs. The quick-start commands above are a shortcut for instructors.
+The base YAML is always supplied first. The build YAML adds local build settings; the load-balancing YAML adds services. If this is your first run, follow the numbered labs. Use the quick-start commands when you want to bring up the project again.
 
 ## Project files
 
@@ -137,10 +141,10 @@ docker compose -f compose.yaml -f compose.lb.yaml down
 
 The named volume remains. `down -v` deletes the workshop database permanently; only use it for an intentional fresh reset.
 
-## Scope and validation
+## A few things to keep in mind
 
-Manual replication and load balancing are demonstrated. Autoscaling is not implemented. A single VM, database and proxy remain shared failure points. Configuration uses demo credentials, plain HTTP and an unauthenticated form: keep it in your teaching environment with fictional data.
+We’ll add the second app instance manually; this project does not include autoscaling. Everything still runs on one VM, with one database and one proxy, so the setup is for learning rather than production use. Use sample feedback: the app has no login and uses HTTP and demo database credentials.
 
-Dependency and image versions are explicit teaching baselines, not a security-update guarantee. Rehearse and review updates before each workshop. Image tags can change upstream; for a fully frozen release, record/pin tested digests after your rehearsal.
+The configuration specifies dependency and image versions to keep the lab consistent. Review updates before reusing it for another workshop, and pin tested image digests if you need an exact copy of a particular build.
 
-Automated application tests cover validation, storage-call behavior, escaping and database failures. A complete Docker/VM rehearsal is still required. See `VALIDATION.md` for checks actually performed during preparation.
+The application tests cover form validation, database calls, HTML escaping and database errors. The full Docker setup still needs a VM rehearsal. See [testing notes](VALIDATION.md) for what has been checked so far.

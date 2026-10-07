@@ -2,7 +2,7 @@
 
 ## Publish the application to GHCR
 
-The repository contains a manually triggered GitHub Actions workflow. It does **not** publish on every push.
+I’ve included a GitHub Actions workflow for publishing the app image. Run it manually when a version is ready to share; it does not publish on every push.
 
 1. Open the repository on GitHub.
 2. Go to **Actions → Publish workshop image → Run workflow** on main.
@@ -26,7 +26,7 @@ Open http://localhost:8081 inside the VM.
 
 ## Prepare offline delivery
 
-On the instructor VM, build the application and fetch the database and proxy images before disconnecting:
+To prepare an offline copy for the workshop, build the application and download the database and proxy images while you have internet:
 
 ```bash
 docker build -t ghcr.io/dception01/campus-feedback:workshop-v1 .
