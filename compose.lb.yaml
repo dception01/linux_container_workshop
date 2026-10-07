@@ -1,0 +1,29 @@
+services:
+  app2:
+    image: ${APP_IMAGE:-ghcr.io/dception01/campus-feedback:workshop-v1}
+    environment:
+      DB_HOST: db
+      POSTGRES_DB: ${POSTGRES_DB:-campus}
+      POSTGRES_USER: ${POSTGRES_USER:-campus}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Copy .env.example to .env first}
+      TEAM_NAME: ${TEAM_NAME:-Campus Builders}
+      INSTANCE_NAME: app-2
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/readyz', timeout=4)"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  nginx:
+    image: nginx:1.28.0-alpine
+    ports:
+      - "${LB_PORT:-8081}:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      app1:
+        condition: service_healthy
+      app2:
+        condition: service_healthy

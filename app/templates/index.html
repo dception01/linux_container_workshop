@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Campus Feedback · {{ team }}</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#101827;color:#edf2fa;font:16px/1.6 system-ui,sans-serif}main{max-width:1000px;margin:auto;padding:40px 24px}.eyebrow{color:#69dfb8;letter-spacing:2px;font-size:12px}h1{font-size:clamp(32px,6vw,52px);line-height:1.1;margin:16px 0}p{color:#acbbd0}.badge{display:inline-block;padding:6px 12px;border:1px solid #43536c;border-radius:20px;font-size:13px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:28px}.card{background:#1a2639;border:1px solid #304159;border-radius:16px;padding:24px}label{display:block;margin-top:14px}input,select,textarea,button{width:100%;padding:12px;margin-top:6px;border-radius:8px;border:1px solid #526179;font:inherit}input,select,textarea{background:#101827;color:white}button{background:#69dfb8;color:#101827;font-weight:700;cursor:pointer;border:0;margin-top:20px}.stats{display:flex;gap:30px}.stats strong{display:block;font-size:32px;color:#69dfb8}.entry{border-top:1px solid #35455d;padding:14px 0;overflow-wrap:anywhere}.entry p{margin:5px 0;white-space:pre-wrap}small{color:#acbbd0}.warning{background:#473721;padding:12px;border-radius:8px}@media(max-width:700px){.grid{grid-template-columns:1fr}}
+</style></head><body><main>
+<div class="eyebrow">LINUX + CONTAINERS / WORKSHOP 2026</div><h1>Campus Feedback</h1>
+<p>Built by {{ team }}. One application. Shared data. Visible infrastructure.</p>
+<span class="badge">Request served by: {{ instance }}</span>
+<span class="badge">Database: {{ 'Connected' if connected else 'Not connected' }}</span>
+{% if not connected %}<p class="warning">The web application is running. Connect PostgreSQL to enable feedback storage.</p>{% endif %}
+<div class="grid"><section class="card"><h2>Share your feedback</h2>
+<form method="post" action="/feedback"><label for="team">Team name</label><input id="team" name="team" maxlength="60" required placeholder="Team Linux">
+<label for="rating">Workshop rating</label><select id="rating" name="rating">{% for n in range(5,0,-1) %}<option value="{{ n }}">{{ n }} / 5</option>{% endfor %}</select>
+<label for="comment">What did you learn?</label><textarea id="comment" name="comment" maxlength="500" rows="4" required></textarea><button type="submit" {% if not connected %}disabled{% endif %}>Submit feedback</button></form></section>
+<section class="card"><h2>Workshop pulse</h2><div class="stats"><div><strong>{{ total }}</strong>Responses</div><div><strong>{{ average }}</strong>Average / 5</div></div>
+<h3>Recent feedback</h3>{% for name,rating,comment,created in rows %}<article class="entry"><b>{{ name }}</b> · {{ rating }}/5<p>{{ comment }}</p><small>{{ created.strftime('%Y-%m-%d %H:%M UTC') }}</small></article>{% else %}<p>No feedback yet. Be the first!</p>{% endfor %}</section></div>
+<p><small>Learning lab: use fictional information. Refresh to observe the serving instance.</small></p>
+</main></body></html>

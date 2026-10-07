@@ -1,0 +1,42 @@
+name: campus-workshop
+x-app: &app
+  image: ${APP_IMAGE:-ghcr.io/dception01/campus-feedback:workshop-v1}
+  environment: &app-env
+    DB_HOST: db
+    POSTGRES_DB: ${POSTGRES_DB:-campus}
+    POSTGRES_USER: ${POSTGRES_USER:-campus}
+    POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Copy .env.example to .env first}
+    TEAM_NAME: ${TEAM_NAME:-Campus Builders}
+  depends_on:
+    db:
+      condition: service_healthy
+  healthcheck:
+    test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/readyz', timeout=4)"]
+    interval: 10s
+    timeout: 5s
+    retries: 5
+    start_period: 10s
+services:
+  db:
+    image: postgres:17.6-bookworm
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-campus}
+      POSTGRES_USER: ${POSTGRES_USER:-campus}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Copy .env.example to .env first}
+    volumes:
+      - campus-data:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 15
+  app1:
+    <<: *app
+    environment:
+      <<: *app-env
+      INSTANCE_NAME: app-1
+    ports:
+      - "${APP_PORT:-8080}:8000"
+volumes:
+  campus-data:
