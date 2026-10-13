@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: campus-config
+  namespace: campus-workshop
+data:
+  DB_HOST: db
+  POSTGRES_DB: campus
+  POSTGRES_USER: campus
+  TEAM_NAME: Campus Builders
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: campus-demo-credentials
+  namespace: campus-workshop
+type: Opaque
+stringData:
+  POSTGRES_PASSWORD: campus_workshop_demo
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: campus-schema
+  namespace: campus-workshop
+data:
+  init.sql: "CREATE TABLE IF NOT EXISTS feedback (\n    id BIGSERIAL PRIMARY KEY,\n\
+    \    team VARCHAR(60) NOT NULL,\n    rating INTEGER NOT NULL CHECK (rating BETWEEN\
+    \ 1 AND 5),\n    comment VARCHAR(500) NOT NULL,\n    created_at TIMESTAMPTZ NOT\
+    \ NULL DEFAULT NOW()\n);\n"

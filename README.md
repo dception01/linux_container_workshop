@@ -6,6 +6,10 @@ This project introduces Linux and container deployment through a Campus Feedback
 
 The lab environment is an Ubuntu 26.04 LTS amd64 virtual machine running on VMware Workstation. Each exercise builds on the previous one, using the same application throughout.
 
+## Automatic Pod replacement with Kubernetes
+
+For the optional self-healing demonstration, follow the [Kubernetes lab](kubernetes/README.md). It includes a two-replica Flask Deployment, a PostgreSQL Deployment with persistent storage, deployment commands and a script that deletes one application Pod and checks its replacement. Use this option to demonstrate automatic Pod recreation. The Docker Compose exercises below remain separate.
+
 ## Start here
 
 The code, configuration files and lab instructions are all here. Clone the repository or choose **Code → Download ZIP**, then open a terminal in the project folder.
